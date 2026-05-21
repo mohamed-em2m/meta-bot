@@ -1,4 +1,5 @@
 import re
+import logging
 import os
 import uuid
 import json
@@ -8,7 +9,6 @@ import inflect
 import calendar
 import tiktoken
 import vertexai
-import traceback
 from datetime import datetime
 import google.auth.transport.requests
 from google.oauth2 import service_account
@@ -135,9 +135,8 @@ def set_env_variables(path):
             os.environ[var] = str(j.get(var))  # Convert to strin
 
 
-import logging
-
 logger = logging.getLogger("meta_app_chatbot")
+
 
 def log_print(level, message="", exception=None, details=None):
     """Helper function for structured logging using standard logging module"""
@@ -147,7 +146,7 @@ def log_print(level, message="", exception=None, details=None):
         log_msg += f" | Details: {details}"
     if exception:
         log_msg += f" | Exception: {exception}"
-    
+
     if level_lower == "error":
         logger.error(log_msg, exc_info=exception)
     elif level_lower in ("warn", "warning"):

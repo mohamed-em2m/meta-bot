@@ -488,7 +488,7 @@ class BigQueryRAG:
         )
 
         query_job = self.client.query(sql_query, job_config=job_config)
-        result = query_job.result()
+        query_job.result()
 
         # Get number of affected rows
         num_deleted = query_job.num_dml_affected_rows or 0

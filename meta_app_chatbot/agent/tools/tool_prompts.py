@@ -16,7 +16,11 @@ user_prompt_dynamic = prompts.user_prompt_dynamic.template
 
 system_template_summarize = ChatPromptTemplate.from_messages(
     [
-        SystemMessagePromptTemplate.from_template(system_prompt_dynamic, template_format="jinja2"),
-        HumanMessagePromptTemplate.from_template(user_prompt_dynamic, template_format="jinja2"),
+        SystemMessagePromptTemplate.from_template(
+            system_prompt_dynamic, template_format="jinja2"
+        ),
+        HumanMessagePromptTemplate.from_template(
+            user_prompt_dynamic, template_format="jinja2"
+        ),
     ]
 )

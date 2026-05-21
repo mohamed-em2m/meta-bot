@@ -1,6 +1,7 @@
 import asyncio
 import firebase_admin
 from meta_app_chatbot.config.settings import settings
+from meta_app_chatbot.agent.utils import log_print
 from firebase_admin import firestore
 from firebase_admin import credentials
 

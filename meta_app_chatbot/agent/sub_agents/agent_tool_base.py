@@ -5,17 +5,17 @@ import logging
 import asyncio
 import traceback
 import tiktoken
-from meta_app_chatbot.agent.utils import *
-from meta_app_chatbot.agent.tools import odoo
 from typing import Annotated
+from typing_extensions import TypedDict
 from datetime import datetime
+from meta_app_chatbot.agent.tools import odoo
 from meta_app_chatbot.agent.model_factory import ModelFactory
 from meta_app_chatbot.config.settings import settings
 from langchain_core.messages import ToolMessage
 from langgraph.graph.message import add_messages
-from typing_extensions import TypedDict, Annotated
 from langgraph.graph import StateGraph, START, END
 from langchain_core.runnables import RunnableLambda
+
 
 logger = logging.getLogger(__name__)
 
@@ -117,9 +117,7 @@ class AgentAsTool:
             openaiKeys: Path to the credentials file or directly a key string.
         """
         if model is None:
-            model = settings.get("tool_agent_model") or settings.get(
-                "extra_model_type"
-            )
+            model = settings.get("tool_agent_model") or settings.get("extra_model_type")
         print(f"[INFO] Initializing AgentAsTool with model: {model}")
         self.encoding = tiktoken.get_encoding("cl100k_base")
         # Placeholder for undefined templates

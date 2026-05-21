@@ -4,7 +4,6 @@ import time
 import httpx
 import asyncio
 import logging
-from meta_app_chatbot.agent.utils import *
 from meta_app_chatbot.config.settings import settings
 
 logger = logging.getLogger(__name__)

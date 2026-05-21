@@ -5,6 +5,7 @@ from meta_app_chatbot.config.settings import settings
 
 router = APIRouter()
 
+
 @router.get("/get_audio")
 async def get_audio(
     path: str = Query(
@@ -28,6 +29,7 @@ async def get_audio(
         print(f"Error fetching attachments: {e}")
         return JSONResponse(status_code=500, content={"error": str(e)})
 
+
 @router.get("/get_image")
 async def get_image(
     path: str = Query(
@@ -45,7 +47,7 @@ async def get_image(
             return JSONResponse(
                 status_code=400, content={"error": "Unsupported image type"}
             )
-        
+
         temp_dir = settings.get("temp_folder", "./temp")
         full_path = os.path.join(temp_dir, filename)
 

@@ -1,4 +1,3 @@
-import os
 import logging
 from typing import Type, Dict, Any
 import google.generativeai as genai
@@ -55,7 +54,9 @@ class AzureModel(Model):
                 **kwargs,
             )
         except Exception as e:
-            raise EnvironmentError(f"Missing required Azure environment variable or configuration: {e}")
+            raise EnvironmentError(
+                f"Missing required Azure environment variable or configuration: {e}"
+            )
 
 
 class GeminiModel(Model):
@@ -79,7 +80,9 @@ class GeminiModel(Model):
                 **kwargs,
             )
         except Exception as e:
-            raise EnvironmentError(f"Missing required Google environment variable or configuration: {e}")
+            raise EnvironmentError(
+                f"Missing required Google environment variable or configuration: {e}"
+            )
 
 
 class GptModel(Model):
@@ -99,7 +102,9 @@ class GptModel(Model):
                 api_key=settings.get("OPENAI_API_KEY"),
             )
         except Exception as e:
-            raise EnvironmentError(f"Missing required OpenAI environment variable or configuration: {e}")
+            raise EnvironmentError(
+                f"Missing required OpenAI environment variable or configuration: {e}"
+            )
 
 
 # ===== Factory Class with Registry =====

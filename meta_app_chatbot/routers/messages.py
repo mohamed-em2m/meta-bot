@@ -39,10 +39,14 @@ async def store_message(payload: StoreMessagesRequest):
         except Exception as e:
             log_print("Error", f"Error happened in store_message: {e}")
             success.append(
-                {"message_id": getattr(message, 'message_id', 'unknown'), "state": False}
+                {
+                    "message_id": getattr(message, "message_id", "unknown"),
+                    "state": False,
+                }
             )
 
     return JSONResponse(status_code=200, content=success)
+
 
 @router.post("/get_top_messages")
 async def get_recent_messages(payload: GetTopMessagesRequest):
@@ -67,4 +71,3 @@ async def get_recent_messages(payload: GetTopMessagesRequest):
     except Exception as e:
         log_print("Error", f"Error fetching messages: {e}")
         return JSONResponse(status_code=500, content={"error": str(e)})
-

@@ -1,6 +1,5 @@
 import traceback
-from meta_app_chatbot.config.settings import settings
-from meta_app_chatbot.agent.utils import log_print, setup_image_api
+from meta_app_chatbot.agent.utils import log_print
 from langchain_core.tools import tool
 from .odoo_controller import odoo
 from .sql_to_domain_odoo import sql_to_odoo_domain
@@ -35,7 +34,7 @@ async def crm_reader(qeury: str) -> dict:
                 log_print("info", f"change type of {d[0]}")
 
                 new_d = odoo.change_value(d)
-                if odoo.fields_key_type[new_d[0]] == str:
+                if odoo.fields_key_type[new_d[0]] is str:
                     if isinstance(new_d[-1], list) and len(new_d[-1]) > 1:
                         new_domain.append("|")
                         for item in new_d[-1]:

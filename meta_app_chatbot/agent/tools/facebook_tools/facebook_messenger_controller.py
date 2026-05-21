@@ -102,7 +102,7 @@ class MessengerClient:
             async with aiofiles.open(file_path, "rb") as f:
                 file_content = await f.read()
 
-            files = {
+            {
                 "message": (
                     None,
                     '{"attachment":{"type":"'

@@ -6,6 +6,8 @@
 
 An asynchronous, high-concurrency WhatsApp,Facebook,Instagram AI agent framework designed for production. Built with **Multi-LLM support (GPT-5, Gemini 2.5)**, **RAG (BigQuery)**, and **modular tool-agents**.
 
+[**View Detailed Documentation 📖**](docs/index.md)
+
 ---
 
 ## ✨ Key Features
@@ -94,12 +96,12 @@ python meta_app_chatbot/main.py
 
 ### 📡 API Endpoints
 
-*   `GET /webhook`: Meta Webhook verification.
-*   `POST /webhook`: Inbound message handler (WhatsApp/Facebook).
-*   `POST /store_messages`: Bulk store conversation history in Firestore.
-*   `POST /get_top_messages`: Retrieve recent conversation context.
-*   `GET /get_audio`: Retrieve temporary audio files.
-*   `GET /get_image`: Retrieve temporary image files.
+* `GET /webhook`: Meta Webhook verification.
+* `POST /webhook`: Inbound message handler (WhatsApp/Facebook).
+* `POST /store_messages`: Bulk store conversation history in Firestore.
+* `POST /get_top_messages`: Retrieve recent conversation context.
+* `GET /get_audio`: Retrieve temporary audio files.
+* `GET /get_image`: Retrieve temporary image files.
 
 ---
 
@@ -108,9 +110,9 @@ python meta_app_chatbot/main.py
 ### Router-Based Design
 
 The application is split into specialized routers for better maintainability:
-*   **Webhook Router**: Decouples platform-specific payload extraction from core agent logic.
-*   **Messages Router**: Handles all stateful persistence with Firestore.
-*   **Media Router**: Provides a secure way to serve temporary assets.
+* **Webhook Router**: Decouples platform-specific payload extraction from core agent logic.
+* **Messages Router**: Handles all stateful persistence with Firestore.
+* **Media Router**: Provides a secure way to serve temporary assets.
 
 ### Multi-Agent Reasoning
 

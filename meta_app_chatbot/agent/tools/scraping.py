@@ -9,33 +9,23 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Sequence, Union
 import pytz
 
-# Third-Party Libraries
 import aiohttp
 import requests
+import tiktoken
+import httpx
+import openai
 from bs4 import BeautifulSoup, Comment, NavigableString
 from googleapiclient.errors import HttpError
 from playwright.async_api import async_playwright
-import tiktoken
-
 from langchain_core.tools import tool
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.documents import Document
-from langchain.schema import (
-    Document,
-)  # Duplicate import with different path; pick one based on usage
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from meta_app_chatbot.agent.tools.tool_prompts import system_template_summarize
-
-# Project-Specific Imports
-from meta_app_chatbot.agent.utils import *
+from meta_app_chatbot.agent.utils import log_print, get_token_length
 from meta_app_chatbot.cache.cache import cache_register
-from meta_app_chatbot.config.settings import settings
-import httpx
-import nest_asyncio
 
-nest_asyncio.apply()
-import openai  # Now using OpenAI-compatible Gemini API
 
 # --- Logging Setup ---
 logging.basicConfig(
@@ -46,7 +36,6 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
-
 
 
 SECTION_TAGS = {
@@ -260,12 +249,6 @@ async def _scrape_task_static(
     return url, await summarize_agent.summarize(scrapped, user_query, index)
 
 
-import asyncio
-import aiohttp
-import nest_asyncio
-from typing import Sequence
-
-
 async def async_scrape_transform_links_static(
     urls: Sequence[str],
     remove_tags=("script", "style", "header", "footer"),
@@ -439,7 +422,6 @@ def scrape_links(
             )
         )
     return contents
-
 
 
 def parse_iso_datetime(s: str) -> Optional[datetime]:
@@ -682,7 +664,7 @@ def extract_events_all(items: List[Dict[str, Any]]) -> str:
         String with formatted event information
     """
     events = ["title|summary|description|dtstart|startdate|url"]
-    now = datetime.now()
+    datetime.now()
 
     for item in items:
         pm = item.get("pagemap", {})
@@ -917,16 +899,12 @@ def google_web_search(
     """
 
     try:
-        filters = []
-
         logger.info(
             f"Starting search for: {search_qeury}, country {country} , lang {lang}"
         )
         key = {"search_qeury": search_qeury, "country": country, "lang": lang}
         if cache_register.exists_auto(key):
             return cache_register.get_auto(key)
-
-        num = 4
 
         log_print("INFO", "Starting Google search")
         """

@@ -1,6 +1,5 @@
 import csv
 import io
-import os
 import logging
 import xmlrpc.client
 from lxml import etree
@@ -8,7 +7,8 @@ from meta_app_chatbot.config.settings import settings
 from meta_app_chatbot.cache.cache import cache_register
 from datetime import datetime, date
 from langchain_core.tools import tool
-from meta_app_chatbot.agent.utils import traceback, log_print
+import traceback
+from meta_app_chatbot.agent.utils import log_print
 from typing import List, Dict, Any, Union
 
 
@@ -85,8 +85,8 @@ class OdooController:
                 value_list[key] = type_name
                 if (
                     type_name not in ["date", "datetime"]
-                    and type_name != "str"
-                    and type_name != str
+                    and type_name is not str
+                    and not isinstance(type_name, str)
                 ):
                     prompt_fields_list[key] = f"{type_name.__name__},{desc},{help}"
 
@@ -109,11 +109,11 @@ class OdooController:
                 value_list[key] = type_name
                 if (
                     type_name not in ["date", "datetime"]
-                    and type_name != "str"
-                    and type_name != str
+                    and type_name is not str
+                    and not isinstance(type_name, str)
                 ) or key in ["id", "description", "name", "display_name", "stage_id"]:
                     prompt_fields_list[key] = f"{type_name.__name__},{desc},{help}"
-                elif type_name != "str" and type_name != str:
+                elif type_name is not str and not isinstance(type_name, str):
                     prompt_fields_list[key] = f"{type_name},{desc},{help}"
         # to get the fields that not appear in the form but still important like id
 

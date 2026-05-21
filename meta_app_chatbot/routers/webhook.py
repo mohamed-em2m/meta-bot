@@ -9,6 +9,7 @@ from meta_app_chatbot.agent.main_agent import Agent
 router = APIRouter()
 agent = Agent()
 
+
 def extract_info(payload: Dict[str, Any]) -> List[Dict[str, Optional[str]]]:
     """
     Extracts messaging info from both WhatsApp Cloud API and Facebook Page messages.
@@ -37,19 +38,21 @@ def extract_info(payload: Dict[str, Any]) -> List[Dict[str, Optional[str]]]:
                     text_body: Optional[str] = None
                     if msg_type == "text":
                         text_body = msg.get("text", {}).get("body")
-                    
-                    if not text_body:
-                        continue # Skip non-text messages if needed or handle accordingly
 
-                    results.append({
-                        "platform": "whatsapp",
-                        "contact_name": contact_name,
-                        "wa_id": wa_id,
-                        "message_id": message_id,
-                        "timestamp": timestamp,
-                        "text_body": text_body,
-                        "fb_sender_id": None,
-                    })
+                    if not text_body:
+                        continue  # Skip non-text messages if needed or handle accordingly
+
+                    results.append(
+                        {
+                            "platform": "whatsapp",
+                            "contact_name": contact_name,
+                            "wa_id": wa_id,
+                            "message_id": message_id,
+                            "timestamp": timestamp,
+                            "text_body": text_body,
+                            "fb_sender_id": None,
+                        }
+                    )
 
     # Detect Facebook Page payload
     elif payload.get("object") == "page":
@@ -77,23 +80,26 @@ def extract_info(payload: Dict[str, Any]) -> List[Dict[str, Optional[str]]]:
                         if title or url:
                             fallback_texts.append(f"{title or ''} {url or ''}".strip())
                     text_body = "\n".join(fallback_texts) if fallback_texts else None
-                
+
                 if not text_body and "attachments" not in message:
                     continue
 
-                results.append({
-                    "platform": "facebook",
-                    "contact_name": None,
-                    "wa_id": None,
-                    "fb_sender_id": psid,
-                    "message_id": message_id,
-                    "timestamp": timestamp,
-                    "text_body": text_body,
-                    "url": url,
-                    "type": message_type,
-                })
+                results.append(
+                    {
+                        "platform": "facebook",
+                        "contact_name": None,
+                        "wa_id": None,
+                        "fb_sender_id": psid,
+                        "message_id": message_id,
+                        "timestamp": timestamp,
+                        "text_body": text_body,
+                        "url": url,
+                        "type": message_type,
+                    }
+                )
 
     return results
+
 
 async def process_message(payload):
     try:
@@ -124,13 +130,14 @@ async def process_message(payload):
             log_print("INFO", f"  message_id: {message_id}")
             log_print("INFO", f"  timestamp: {timestamp}")
             log_print("INFO", f"  text: {text_body}")
-            
+
             if message_type == "text":
                 await agent.ask(record)
             elif message_type == "audio":
                 await agent.ask_audio(record)
         except Exception as msg_error:
             log_print("WARNING", "Error processing message record", exception=msg_error)
+
 
 @router.get("/webhook")
 async def verify_webhook(
@@ -142,6 +149,7 @@ async def verify_webhook(
         return Response(content=challenge, status_code=200)
     raise HTTPException(status_code=403, detail="Verification token mismatch")
 
+
 @router.post("/webhook")
 async def receive_messages(request: Request) -> Response:
     try:
@@ -151,9 +159,9 @@ async def receive_messages(request: Request) -> Response:
 
     if "delivery" in payload or "entry" not in payload:
         return Response(status_code=200)
-    
+
     asyncio.create_task(process_message(payload))
-    # Note: time.sleep(2) was in the original code, but it's blocking. 
+    # Note: time.sleep(2) was in the original code, but it's blocking.
     # However, keeping it as is to preserve original logic behavior if it was intentional for rate limiting/ordering
-    time.sleep(2) 
+    time.sleep(2)
     return Response(status_code=200)

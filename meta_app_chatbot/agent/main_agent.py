@@ -2,10 +2,17 @@ import time
 import pytz
 import asyncio
 import logging
-from .utils import *
+import traceback
 from datetime import datetime
-from .sub_agents import agent_pairs
 from typing import Any, Dict, Optional
+
+from .utils import (
+    log_print,
+    load_json,
+    get_token_length,
+    create_messages_to_ai_format_v2,
+)
+from .sub_agents import agent_pairs
 from .model_factory import ModelFactory
 from meta_app_chatbot.config.settings import settings
 from meta_app_chatbot.db.firestore import FirestoreFactory
@@ -14,6 +21,7 @@ from meta_app_chatbot.voice.voice import GoogleSpeechService
 from meta_app_chatbot.db.rag.big_query_rag import UnifiedBigQueryRAG
 from meta_app_chatbot.agent.supports import AudioController, MessageController
 from firebase_admin.firestore import SERVER_TIMESTAMP
+
 from .tools import (
     whatsapp,
     read_data_by_reveal_id,
@@ -70,27 +78,29 @@ class Agent(AudioController, MessageController):
             self.rag_table = rag_table or settings.get("RAG_TABLE")
             self.few_shot_table = few_shot_table or settings.get("FEW_SHOTS_TABLE")
 
-            self.user_messages_db = (
-                user_messages_db or settings.get("DEFUALT_USER_DB_NAME")
+            self.user_messages_db = user_messages_db or settings.get(
+                "DEFUALT_USER_DB_NAME"
             )
-            self.pool_messages_db = (
-                pool_messages_db or settings.get("DEFUALT_MESSAGES_POOL_DB_NAME")
+            self.pool_messages_db = pool_messages_db or settings.get(
+                "DEFUALT_MESSAGES_POOL_DB_NAME"
             )
 
             self.info_schema_path = info_schema_path or settings.get("INFO_SCHEMA_PATH")
-            self.few_shots_schema_path = (
-                few_shots_schema_path or settings.get("FEW_SHOTS_SCHEMA_PATH")
+            self.few_shots_schema_path = few_shots_schema_path or settings.get(
+                "FEW_SHOTS_SCHEMA_PATH"
             )
 
             self.main_agent_type = main_models_type or settings.get("main_model_type")
 
-            self.extra_models_type = extra_models_type or settings.get("extra_model_type")
-
-            self.divider_model_type = (
-                divider_model_type or settings.get("divider_model_type")
+            self.extra_models_type = extra_models_type or settings.get(
+                "extra_model_type"
             )
-            self.extract_model_type = (
-                extract_model_type or settings.get("extract_model_type")
+
+            self.divider_model_type = divider_model_type or settings.get(
+                "divider_model_type"
+            )
+            self.extract_model_type = extract_model_type or settings.get(
+                "extract_model_type"
             )
 
             self.info_schema = load_json(self.info_schema_path)
@@ -581,7 +591,7 @@ class Agent(AudioController, MessageController):
 
             main_agent_output = await self.handle_incoming_message(p_data)
 
-            if main_agent_output == None:
+            if main_agent_output is None:
                 return
 
             response_parts = await self.divide_response_to_messages_text(
@@ -636,7 +646,7 @@ class Agent(AudioController, MessageController):
 
             main_agent_output = await self.handle_incoming_message(p_data)
 
-            if main_agent_output == None:
+            if main_agent_output is None:
                 return
 
             ai_final_response_content = self.prepare_text_for_tts(

@@ -14,6 +14,7 @@ from dynaprompt import DynaPrompt
 PROMPTS_DIR = pathlib.Path(__file__).parent.parent / "prompts"
 prompts = DynaPrompt(settings_files=[str(PROMPTS_DIR)])
 
+
 class Summarize(BaseModel):
     thoughts: Optional[str] = ""
     is_trivia_question: bool = False
@@ -33,32 +34,30 @@ divied_text_parser = PydanticOutputParser(pydantic_object=divideClass)
 # Load prompts dynamically from DynaPrompt
 
 system_message = SystemMessagePromptTemplate.from_template(
-    prompts.system_message.template,
-    template_format="jinja2"
+    prompts.system_message.template, template_format="jinja2"
 )
 
 human_message = HumanMessagePromptTemplate.from_template(
-    prompts.human_message.template,
-    template_format="jinja2"
+    prompts.human_message.template, template_format="jinja2"
 )
 
 main_prompt = ChatPromptTemplate.from_messages(
     [
         system_message,
         MessagesPlaceholder(variable_name="conversation_history"),
-        HumanMessagePromptTemplate.from_template("{{ query }}", template_format="jinja2"),
+        HumanMessagePromptTemplate.from_template(
+            "{{ query }}", template_format="jinja2"
+        ),
         human_message,
     ]
 )
 
 history_system_message = SystemMessagePromptTemplate.from_template(
-    prompts.history_system_message.template,
-    template_format="jinja2"
+    prompts.history_system_message.template, template_format="jinja2"
 )
 
 history_human_message = HumanMessagePromptTemplate.from_template(
-    prompts.history_human_message.template,
-    template_format="jinja2"
+    prompts.history_human_message.template, template_format="jinja2"
 )
 
 history_prompt = ChatPromptTemplate.from_messages(
@@ -66,13 +65,11 @@ history_prompt = ChatPromptTemplate.from_messages(
 ).partial(format_instructions=summarize_parser.get_format_instructions())
 
 system_message_facts = SystemMessagePromptTemplate.from_template(
-    prompts.system_message_facts.template,
-    template_format="jinja2"
+    prompts.system_message_facts.template, template_format="jinja2"
 )
 
 human_message_facts = HumanMessagePromptTemplate.from_template(
-    prompts.human_message_facts.template,
-    template_format="jinja2"
+    prompts.human_message_facts.template, template_format="jinja2"
 )
 
 facts_extractor_prompt = ChatPromptTemplate.from_messages(
@@ -80,13 +77,11 @@ facts_extractor_prompt = ChatPromptTemplate.from_messages(
 )
 
 system_divide_message = SystemMessagePromptTemplate.from_template(
-    prompts.system_divide_message.template,
-    template_format="jinja2"
+    prompts.system_divide_message.template, template_format="jinja2"
 )
 
 human_divide_message = HumanMessagePromptTemplate.from_template(
-    prompts.human_divide_message.template,
-    template_format="jinja2"
+    prompts.human_divide_message.template, template_format="jinja2"
 )
 
 divide_agent_prompt = ChatPromptTemplate.from_messages(
@@ -94,13 +89,11 @@ divide_agent_prompt = ChatPromptTemplate.from_messages(
 ).partial(format_instructions=divied_text_parser.get_format_instructions())
 
 response_summarize_system = SystemMessagePromptTemplate.from_template(
-    prompts.response_summarize_system.template,
-    template_format="jinja2"
+    prompts.response_summarize_system.template, template_format="jinja2"
 )
 
 response_summarize_human = HumanMessagePromptTemplate.from_template(
-    prompts.response_summarize_human.template,
-    template_format="jinja2"
+    prompts.response_summarize_human.template, template_format="jinja2"
 )
 
 summarize_response_prompt = ChatPromptTemplate.from_messages(
@@ -108,13 +101,11 @@ summarize_response_prompt = ChatPromptTemplate.from_messages(
 )
 
 system_divide_audio = SystemMessagePromptTemplate.from_template(
-    prompts.system_divide_audio.template,
-    template_format="jinja2"
+    prompts.system_divide_audio.template, template_format="jinja2"
 )
 
 human_divide_audio = HumanMessagePromptTemplate.from_template(
-    prompts.human_divide_audio.template,
-    template_format="jinja2"
+    prompts.human_divide_audio.template, template_format="jinja2"
 )
 
 divide_audio_prompt = ChatPromptTemplate.from_messages(
