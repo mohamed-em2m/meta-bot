@@ -1,44 +1,45 @@
-import time
-import pytz
 import asyncio
 import logging
+import time
 import traceback
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
-from .utils import (
-    log_print,
-    load_json,
-    get_token_length,
-    create_messages_to_ai_format_v2,
-)
-from .sub_agents import agent_pairs
-from .model_factory import ModelFactory
-from meta_app_chatbot.config.settings import settings
-from meta_app_chatbot.db.firestore import FirestoreFactory
-from .create_graph_agent import create_graph
-from meta_app_chatbot.voice.voice import GoogleSpeechService
-from meta_app_chatbot.db.rag.big_query_rag import UnifiedBigQueryRAG
-from meta_app_chatbot.agent.supports import AudioController, MessageController
+import pytz
 from firebase_admin.firestore import SERVER_TIMESTAMP
 
+from meta_app_chatbot.agent.supports import AudioController, MessageController
+from meta_app_chatbot.config.settings import settings
+from meta_app_chatbot.db.firestore import FirestoreFactory
+from meta_app_chatbot.db.rag.big_query_rag import UnifiedBigQueryRAG
+from meta_app_chatbot.voice.voice import GoogleSpeechService
+
+from .create_graph_agent import create_graph
+from .main_prompts import (
+    divide_agent_prompt,
+    divide_audio_prompt,
+    divied_text_parser,
+    facts_extractor_prompt,
+    history_prompt,
+    main_prompt,
+    summarize_parser,
+    summarize_response_prompt,
+)
+from .model_factory import ModelFactory
+from .sub_agents import agent_pairs
 from .tools import (
-    whatsapp,
-    read_data_by_reveal_id,
-    facebook,
-    odoo,
     create_payment_and_booking,
     delete_payment_and_booking,
+    facebook,
+    odoo,
+    read_data_by_reveal_id,
+    whatsapp,
 )
-from .main_prompts import (
-    main_prompt,
-    history_prompt,
-    facts_extractor_prompt,
-    divide_agent_prompt,
-    summarize_response_prompt,
-    summarize_parser,
-    divied_text_parser,
-    divide_audio_prompt,
+from .utils import (
+    create_messages_to_ai_format_v2,
+    get_token_length,
+    load_json,
+    log_print,
 )
 
 logger = logging.getLogger(__name__)
@@ -320,8 +321,8 @@ class Agent(AudioController, MessageController):
         log_print("info", "All message parts have been sent.")
 
     async def handle_incoming_message(
-        self, p_data: Dict[str, Any], *, summary_history_window: int = 3
-    ) -> Optional[Dict[str, Any]]:
+        self, p_data: dict[str, Any], *, summary_history_window: int = 3
+    ) -> dict[str, Any] | None:
         """
         Handles an incoming message, processes it, and returns an AI-generated response.
         """
@@ -401,7 +402,7 @@ class Agent(AudioController, MessageController):
             context["compressed_user_message"],
         )
 
-    def _is_valid_message(self, p_data: Dict[str, Any]) -> bool:
+    def _is_valid_message(self, p_data: dict[str, Any]) -> bool:
         """Validates the incoming message data."""
         if not p_data or not p_data.get("text_body"):
             logger.warning("Invalid or empty message received.")
@@ -417,8 +418,8 @@ class Agent(AudioController, MessageController):
         return self.create_document_id(timestamp_micros, role)
 
     def _create_user_message(
-        self, p_data: Dict[str, Any], user_document_id: str
-    ) -> Dict[str, Any]:
+        self, p_data: dict[str, Any], user_document_id: str
+    ) -> dict[str, Any]:
         """Creates the user message dictionary."""
         return {
             "id": user_document_id,
@@ -434,7 +435,7 @@ class Agent(AudioController, MessageController):
         }
 
     async def _store_user_message(
-        self, firestore_id: str, user_document_id: str, user_message: Dict[str, Any]
+        self, firestore_id: str, user_document_id: str, user_message: dict[str, Any]
     ):
         """Stores the user message in the user and pool databases."""
         await asyncio.gather(
@@ -448,7 +449,7 @@ class Agent(AudioController, MessageController):
 
     async def _gather_conversation_context(
         self, firestore_id: str, summary_history_window: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Gathers all necessary context for processing the message."""
         firestore_id, messages, facts, last_len = await self._get_conversation_context(
             firestore_id
@@ -485,7 +486,7 @@ class Agent(AudioController, MessageController):
         }
 
     async def _process_and_enhance_context(
-        self, firestore_id: str, context: Dict[str, Any]
+        self, firestore_id: str, context: dict[str, Any]
     ):
         """Extracts facts and gathers additional context."""
 
@@ -496,8 +497,8 @@ class Agent(AudioController, MessageController):
         )
 
     async def _prepare_chain_input(
-        self, firestore_id: str, p_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, firestore_id: str, p_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Prepares the input dictionary for the main AI chain."""
         time_now = datetime.now(pytz.timezone("Europe/Rome")).strftime("%Y-%m-%d %H:%M")
         city_list = await odoo._fetch_available_cities()
@@ -532,7 +533,7 @@ class Agent(AudioController, MessageController):
 
     async def _store_assistant_response(
         self,
-        p_data: Dict[str, Any],
+        p_data: dict[str, Any],
         firestore_id: str,
         user_document_id: str,
         ai_response: str,
@@ -566,7 +567,7 @@ class Agent(AudioController, MessageController):
         collection_id: str,
         document_id: str,
         user_query: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Creates the final output dictionary."""
         return {
             "response": response,

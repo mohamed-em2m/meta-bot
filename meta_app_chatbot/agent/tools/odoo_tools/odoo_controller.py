@@ -1,15 +1,17 @@
 import csv
 import io
 import logging
-import xmlrpc.client
-from lxml import etree
-from meta_app_chatbot.config.settings import settings
-from meta_app_chatbot.cache.cache import cache_register
-from datetime import datetime, date
-from langchain_core.tools import tool
 import traceback
+import xmlrpc.client
+from datetime import date, datetime
+from typing import Any
+
+from langchain_core.tools import tool
+from lxml import etree
+
 from meta_app_chatbot.agent.utils import log_print
-from typing import List, Dict, Any, Union
+from meta_app_chatbot.cache.cache import cache_register
+from meta_app_chatbot.config.settings import settings
 
 
 class OdooController:
@@ -154,7 +156,7 @@ class OdooController:
             raise ConnectionError(f"Failed to set up models proxy: {e}")
 
     def _execute_kw(
-        self, model: str, method: str, args: List = None, kwargs: Dict = None
+        self, model: str, method: str, args: list = None, kwargs: dict = None
     ) -> Any:
         """
         Execute a method on an Odoo model with error handling.
@@ -187,7 +189,7 @@ class OdooController:
             self.logger.error(f"Error executing {model}.{method}: {e}")
             raise
 
-    def get_version(self) -> Dict[str, Any]:
+    def get_version(self) -> dict[str, Any]:
         """
         Get Odoo server version information.
 
@@ -203,11 +205,11 @@ class OdooController:
     def search(
         self,
         model: str,
-        domain: List = None,
+        domain: list = None,
         offset: int = 0,
         limit: int = 0,
         order: str = None,
-    ) -> List[int]:
+    ) -> list[int]:
         """
         Search for records matching the domain.
 
@@ -233,7 +235,7 @@ class OdooController:
 
         return self._execute_kw(model, "search", [domain], kwargs)
 
-    def search_count(self, model: str, domain: List = None) -> int:
+    def search_count(self, model: str, domain: list = None) -> int:
         """
         Count records matching the domain.
 
@@ -248,8 +250,8 @@ class OdooController:
         return self._execute_kw(model, "search_count", [domain])
 
     def read(
-        self, model: str, ids: Union[int, List[int]], fields: List[str] = None
-    ) -> List[Dict]:
+        self, model: str, ids: int | list[int], fields: list[str] = None
+    ) -> list[dict]:
         """
         Read records by ID.
 
@@ -273,12 +275,12 @@ class OdooController:
     def search_read(
         self,
         model: str,
-        domain: List = None,
-        fields: List[str] = None,
+        domain: list = None,
+        fields: list[str] = None,
         offset: int = 0,
         limit: int = 0,
         order: str = None,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """
         Search and read records in one call.
 
@@ -307,9 +309,7 @@ class OdooController:
 
         return self._execute_kw(model, "search_read", [domain], kwargs)
 
-    def create(
-        self, model: str, data: Union[Dict, List[Dict]]
-    ) -> Union[int, List[int]]:
+    def create(self, model: str, data: dict | list[dict]) -> int | list[int]:
         """
         Create new record(s).
 
@@ -330,7 +330,7 @@ class OdooController:
                 ids.append(record_id)
             return ids
 
-    def write(self, model: str, ids: Union[int, List[int]], data: Dict) -> bool:
+    def write(self, model: str, ids: int | list[int], data: dict) -> bool:
         """
         Update existing record(s).
 
@@ -347,7 +347,7 @@ class OdooController:
 
         return self._execute_kw(model, "write", [ids, data])
 
-    def unlink(self, model: str, ids: Union[int, List[int]]) -> bool:
+    def unlink(self, model: str, ids: int | list[int]) -> bool:
         """
         Delete record(s).
 
@@ -364,8 +364,8 @@ class OdooController:
         return self._execute_kw(model, "unlink", [ids])
 
     def fields_get(
-        self, model: str, fields: List[str] = None, attributes: List[str] = None
-    ) -> Dict[str, Dict]:
+        self, model: str, fields: list[str] = None, attributes: list[str] = None
+    ) -> dict[str, dict]:
         """
         Get field definitions for a model.
 
@@ -391,9 +391,9 @@ class OdooController:
         self,
         model: str,
         view_type: str = "form",
-        fields: List[str] = None,
-        attributes: List[str] = None,
-    ) -> Dict[str, Dict]:
+        fields: list[str] = None,
+        attributes: list[str] = None,
+    ) -> dict[str, dict]:
         """
         Retrieve metadata only for fields visible in the specified CRM view.
 
@@ -427,7 +427,7 @@ class OdooController:
         filtered = {f: field_defs[f] for f in view_fields if f in field_defs}
         return filtered
 
-    def name_get(self, model: str, ids: Union[int, List[int]]) -> List[tuple]:
+    def name_get(self, model: str, ids: int | list[int]) -> list[tuple]:
         """
         Get display names for records.
 
@@ -447,10 +447,10 @@ class OdooController:
         self,
         model: str,
         name: str = "",
-        domain: List = None,
+        domain: list = None,
         operator: str = "ilike",
         limit: int = 100,
-    ) -> List[tuple]:
+    ) -> list[tuple]:
         """
         Search for records by name.
 
@@ -494,7 +494,7 @@ class OdooController:
             return set()
 
     def call_method(
-        self, model: str, method: str, record_ids: List[int] = None, *args, **kwargs
+        self, model: str, method: str, record_ids: list[int] = None, *args, **kwargs
     ) -> Any:
         """
         Call a custom method on a model.
@@ -516,7 +516,7 @@ class OdooController:
 
         return self._execute_kw(model, method, call_args, kwargs)
 
-    def get_metadata(self, model: str, ids: Union[int, List[int]]) -> List[Dict]:
+    def get_metadata(self, model: str, ids: int | list[int]) -> list[dict]:
         """
         Get metadata for records (creation/modification dates, user, etc.).
 
@@ -532,7 +532,7 @@ class OdooController:
 
         return self._execute_kw(model, "get_metadata", [ids])
 
-    def export_data(self, model: str, ids: List[int], fields: List[str]) -> Dict:
+    def export_data(self, model: str, ids: list[int], fields: list[str]) -> dict:
         """
         Export data from records.
 
@@ -567,7 +567,7 @@ class OdooController:
             {"raise_exception": raise_exception},
         )
 
-    def get_model_list(self) -> List[str]:
+    def get_model_list(self) -> list[str]:
         """
         Get list of all available models.
 
@@ -698,7 +698,7 @@ class OdooHelper:
     def __init__(self, odoo_controller: OdooController):
         self.odoo = odoo_controller
 
-    def get_user_info(self, user_id: int = None) -> Dict:
+    def get_user_info(self, user_id: int = None) -> dict:
         """Get current or specified user information."""
         uid = user_id or self.odoo.uid
         users = self.odoo.read(
@@ -706,7 +706,7 @@ class OdooHelper:
         )
         return users[0] if users else {}
 
-    def get_company_info(self) -> Dict:
+    def get_company_info(self) -> dict:
         """Get current user's company information."""
         user = self.get_user_info()
         if "company_id" in user:

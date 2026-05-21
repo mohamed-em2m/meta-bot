@@ -1,18 +1,19 @@
-import re
+import base64
+import calendar
+import hashlib
+import json
 import logging
 import os
+import re
 import uuid
-import json
-import base64
-import hashlib
+from datetime import datetime
+
+import google.auth.transport.requests
 import inflect
-import calendar
 import tiktoken
 import vertexai
-from datetime import datetime
-import google.auth.transport.requests
-from google.oauth2 import service_account
 from fastapi.responses import JSONResponse
+from google.oauth2 import service_account
 
 p = inflect.engine()
 
@@ -129,7 +130,7 @@ def create_img_template(imgs):
 
 
 def set_env_variables(path):
-    with open(f"{path}", "r", encoding="utf-8") as file:
+    with open(f"{path}", encoding="utf-8") as file:
         j = json.load(file)
         for var in j.keys():
             os.environ[var] = str(j.get(var))  # Convert to strin
@@ -289,5 +290,5 @@ def create_messages_to_ai_format_v2(
 
 
 def load_json(path):
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)

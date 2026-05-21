@@ -1,6 +1,8 @@
 import os
+
 from fastapi import APIRouter, Query, Response
 from fastapi.responses import JSONResponse
+
 from meta_app_chatbot.config.settings import settings
 
 router = APIRouter()

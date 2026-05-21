@@ -1,14 +1,14 @@
 import pathlib
-from typing import Optional
-from pydantic import BaseModel
+
+from dynaprompt import DynaPrompt
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import (
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
     ChatPromptTemplate,
+    HumanMessagePromptTemplate,
     MessagesPlaceholder,
+    SystemMessagePromptTemplate,
 )
-from dynaprompt import DynaPrompt
+from pydantic import BaseModel
 
 # Path to the prompts directory
 PROMPTS_DIR = pathlib.Path(__file__).parent.parent / "prompts"
@@ -16,12 +16,12 @@ prompts = DynaPrompt(settings_files=[str(PROMPTS_DIR)])
 
 
 class Summarize(BaseModel):
-    thoughts: Optional[str] = ""
+    thoughts: str | None = ""
     is_trivia_question: bool = False
-    trivia_answer: Optional[str] = "هاي"
-    lang: Optional[str] = ""
-    voice_lang: Optional[str] = "arabic"
-    rag_query: Optional[str] = "Merasi"
+    trivia_answer: str | None = "هاي"
+    lang: str | None = ""
+    voice_lang: str | None = "arabic"
+    rag_query: str | None = "Merasi"
 
 
 class divideClass(BaseModel):

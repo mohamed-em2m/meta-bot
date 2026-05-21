@@ -1,9 +1,10 @@
 import logging
-from typing import Type, Dict, Any
-import google.generativeai as genai
 from abc import ABC, abstractmethod
-from langchain_openai import AzureChatOpenAI, ChatOpenAI
+from typing import Any
+
+import google.generativeai as genai
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import AzureChatOpenAI, ChatOpenAI
 
 from meta_app_chatbot.config.settings import settings
 
@@ -54,7 +55,7 @@ class AzureModel(Model):
                 **kwargs,
             )
         except Exception as e:
-            raise EnvironmentError(
+            raise OSError(
                 f"Missing required Azure environment variable or configuration: {e}"
             )
 
@@ -80,7 +81,7 @@ class GeminiModel(Model):
                 **kwargs,
             )
         except Exception as e:
-            raise EnvironmentError(
+            raise OSError(
                 f"Missing required Google environment variable or configuration: {e}"
             )
 
@@ -102,17 +103,17 @@ class GptModel(Model):
                 api_key=settings.get("OPENAI_API_KEY"),
             )
         except Exception as e:
-            raise EnvironmentError(
+            raise OSError(
                 f"Missing required OpenAI environment variable or configuration: {e}"
             )
 
 
 # ===== Factory Class with Registry =====
 class ModelFactory:
-    _registry: Dict[str, Type[Model]] = {}
+    _registry: dict[str, type[Model]] = {}
 
     @classmethod
-    def register(cls, key: str, model_cls: Type[Model]):
+    def register(cls, key: str, model_cls: type[Model]):
         cls._registry[key] = model_cls
 
     @classmethod

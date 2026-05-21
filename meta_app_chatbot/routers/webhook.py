@@ -1,20 +1,22 @@
 import asyncio
 import time
-from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, HTTPException, Request, Response, Query
-from meta_app_chatbot.config.settings import settings
-from meta_app_chatbot.agent.utils import log_print
+from typing import Any
+
+from fastapi import APIRouter, HTTPException, Query, Request, Response
+
 from meta_app_chatbot.agent.main_agent import Agent
+from meta_app_chatbot.agent.utils import log_print
+from meta_app_chatbot.config.settings import settings
 
 router = APIRouter()
 agent = Agent()
 
 
-def extract_info(payload: Dict[str, Any]) -> List[Dict[str, Optional[str]]]:
+def extract_info(payload: dict[str, Any]) -> list[dict[str, str | None]]:
     """
     Extracts messaging info from both WhatsApp Cloud API and Facebook Page messages.
     """
-    results: List[Dict[str, Optional[str]]] = []
+    results: list[dict[str, str | None]] = []
 
     # Detect WhatsApp payload
     if payload.get("object") == "whatsapp_business_account":
@@ -35,7 +37,7 @@ def extract_info(payload: Dict[str, Any]) -> List[Dict[str, Optional[str]]]:
                     timestamp = msg.get("timestamp")
                     msg_type = msg.get("type")
 
-                    text_body: Optional[str] = None
+                    text_body: str | None = None
                     if msg_type == "text":
                         text_body = msg.get("text", {}).get("body")
 

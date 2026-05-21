@@ -1,7 +1,8 @@
 import os
+
 import httpx
+
 from meta_app_chatbot.agent.utils import log_print
-from typing import Optional, List
 
 
 class WhatsAppClient:
@@ -38,7 +39,7 @@ class WhatsAppClient:
         to: str,
         template_name: str,
         language_code: str = "en_US",
-        components: Optional[List[dict]] = None,
+        components: list[dict] | None = None,
     ):
         payload = {
             "messaging_product": "whatsapp",
@@ -52,7 +53,7 @@ class WhatsAppClient:
             return await client.post(self.base_url, headers=self.headers, json=payload)
 
     async def send_image_message(
-        self, to: str, image_link: str, caption: Optional[str] = None
+        self, to: str, image_link: str, caption: str | None = None
     ):
         image_obj = {"link": image_link}
         if caption:
@@ -68,7 +69,7 @@ class WhatsAppClient:
             return await client.post(self.base_url, headers=self.headers, json=payload)
 
     async def send_document_message(
-        self, to: str, document_link: str, filename: str, caption: Optional[str] = None
+        self, to: str, document_link: str, filename: str, caption: str | None = None
     ):
         document_obj = {"link": document_link, "filename": filename}
         if caption:
@@ -88,8 +89,8 @@ class WhatsAppClient:
         to: str,
         latitude: float,
         longitude: float,
-        name: Optional[str] = None,
-        address: Optional[str] = None,
+        name: str | None = None,
+        address: str | None = None,
     ):
         location_obj = {"latitude": latitude, "longitude": longitude}
         if name:

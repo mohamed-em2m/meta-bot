@@ -1,13 +1,15 @@
-import uuid
-import json
 import datetime
+import json
 import traceback
-from .odoo_tools import odoo
-from meta_app_chatbot.config.settings import settings
-from meta_app_chatbot.agent.utils import log_print
+import uuid
+
 from langchain_core.tools import tool
+
+from meta_app_chatbot.agent.utils import generate_access_key, log_print
+from meta_app_chatbot.config.settings import settings
 from meta_app_chatbot.db.firestore import FirestoreFactory
-from meta_app_chatbot.agent.utils import generate_access_key
+
+from .odoo_tools import odoo
 
 
 @tool

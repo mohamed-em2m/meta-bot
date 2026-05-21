@@ -1,6 +1,9 @@
 import traceback
-from meta_app_chatbot.agent.utils import log_print
+
 from langchain_core.tools import tool
+
+from meta_app_chatbot.agent.utils import log_print
+
 from .odoo_controller import odoo
 from .sql_to_domain_odoo import sql_to_odoo_domain
 

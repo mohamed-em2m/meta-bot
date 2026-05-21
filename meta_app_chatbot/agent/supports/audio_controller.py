@@ -1,9 +1,11 @@
-import re
-import uuid
-import time
-import httpx
 import asyncio
 import logging
+import re
+import time
+import uuid
+
+import httpx
+
 from meta_app_chatbot.config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -135,7 +137,7 @@ class AudioController:
 
                 return text
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.warning(
                     f"Transcription attempt {attempt} timed out after 5 seconds."
                 )

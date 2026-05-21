@@ -1,32 +1,38 @@
 # 🚀 Deployment & Setup
 
-This guide will help you deploy the Meta App Chatbot to a production environment, specifically focusing on Google Cloud Run.
+This guide will help you deploy the Meta App Chatbot to a production environment.
 
 ---
 
 ## 🏗️ Prerequisites
 
-1. **Meta Developer Account**: Create an app and set up the WhatsApp product.
-2. **Google Cloud Project**: Enabled with BigQuery and Firestore.
-3. **Docker**: Installed locally for building the image.
+- **Meta Developer Account**: Create an app and set up the WhatsApp/Facebook products.
+- **Google Cloud Project**: Enabled with BigQuery and Firestore.
+- **Docker**: Installed locally for building the image.
 
 ---
 
 ## 🛠️ Local Development
 
-```bash
-# 1. Clone and Install
-git clone https://github.com/your-repo/meta-app-chatbot.git
-cd meta-app-chatbot
-pip install -r requirements.txt
+=== "Step 1: Clone"
 
-# 2. Configure
-cp meta_app_chatbot/config/settings.toml.example meta_app_chatbot/config/settings.toml
-# Edit settings.toml with your keys
+    ```bash
+    git clone https://github.com/mohamed-em2m/meta-bot.git
+    cd meta-bot
+    ```
 
-# 3. Run
-python meta_app_chatbot/main.py
-```
+=== "Step 2: Environment"
+
+    ```bash
+    uv sync
+    source .venv/bin/activate
+    ```
+
+=== "Step 3: Run"
+
+    ```bash
+    python meta_app_chatbot/main.py
+    ```
 
 ---
 
@@ -34,35 +40,42 @@ python meta_app_chatbot/main.py
 
 The provided `Dockerfile` uses a multi-stage build to ensure a slim runtime image.
 
-```bash
+```bash title="Build and Run"
 # Build the image
 docker build -t meta-chatbot .
 
-# Run the container locally to test
+# Run the container locally
 docker run -p 8080:8080 --env-file .env meta-chatbot
 ```
 
 ---
 
-## ☁️ Google Cloud Run (Recommended)
+## ☁️ Google Cloud Run
+
+!!! info "Recommended Pattern"
+    We recommend using Google Cloud Run for its seamless integration with Firestore and BigQuery and its ability to scale to zero.
 
 1. **Push to Artifact Registry**:
 
-   ```bash
-   docker tag meta-chatbot gcr.io/[PROJECT_ID]/meta-chatbot
-   docker push gcr.io/[PROJECT_ID]/meta-chatbot
-   ```
+    ```bash
+    docker tag meta-chatbot gcr.io/[PROJECT_ID]/meta-chatbot
+    docker push gcr.io/[PROJECT_ID]/meta-chatbot
+    ```
 
-2. **Deploy**:
-   Deploy the image via the Google Cloud Console or CLI. Ensure you set the `PORT` to `8080`.
+2. **Deploy Command**:
 
-3. **Webhook Configuration**:
-   After deployment, Meta will provide a service URL. Add `/webhook` to this URL and use it in your Meta Dashboard.
+    ```bash
+    gcloud run deploy meta-chatbot \
+      --image gcr.io/[PROJECT_ID]/meta-chatbot \
+      --platform managed \
+      --port 8080
+    ```
 
 ---
 
 ## 📬 Webhook Troubleshooting
 
-* **Verification Failed**: Ensure your `VERIFY_TOKEN` in Meta matches exactly with the one in `settings.toml`.
-* **Timeout (500 Error)**: Meta requires a response within 3 seconds. The project handles this by using `asyncio.create_task` to process the message in the background while immediately returning a `200 OK`.
-* **Permissions**: Ensure your Meta App has the `messages` and `messaging_postbacks` subscriptions enabled.
+??? bug "Common Issues"
+    - **Verification Failed**: Ensure your `VERIFY_TOKEN` matches exactly.
+    - **Timeout (500 Error)**: Meta requires a response within 3 seconds. The project handles this via background tasks.
+    - **Permissions**: Ensure your Meta App has `messages` and `messaging_postbacks` enabled.

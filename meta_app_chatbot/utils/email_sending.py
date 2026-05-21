@@ -15,7 +15,7 @@ import logging
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any
 
 import resend
 from config import CONFIG
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 
-def _normalize_recipients(value: Union[str, list[str]]) -> list[str]:
+def _normalize_recipients(value: str | list[str]) -> list[str]:
     return [value] if isinstance(value, str) else list(value)
 
 
@@ -47,11 +47,11 @@ def _build_recipients() -> list[str]:
 def create_ads_notification(
     action_type: str,
     campaign_id: str,
-    message: Optional[str] = None,
-    old_value: Optional[str] = None,
-    new_value: Optional[str] = None,
-    extra: Optional[Dict[str, Any]] = None,
-) -> Tuple[str, str]:
+    message: str | None = None,
+    old_value: str | None = None,
+    new_value: str | None = None,
+    extra: dict[str, Any] | None = None,
+) -> tuple[str, str]:
     """Return (html_body, plain_body) for an ads notification."""
 
     def fmt(v: Any) -> str:
@@ -185,10 +185,10 @@ async def send_notification(
 async def send_message(
     action_type: str,
     campaign_id: str,
-    message: Optional[str] = None,
-    old_value: Optional[str] = None,
-    new_value: Optional[str] = None,
-    extra: Optional[Dict[str, Any]] = None,
+    message: str | None = None,
+    old_value: str | None = None,
+    new_value: str | None = None,
+    extra: dict[str, Any] | None = None,
 ) -> bool:
     """Build and send an ads notification email."""
     try:

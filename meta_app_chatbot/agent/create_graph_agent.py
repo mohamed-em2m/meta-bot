@@ -1,16 +1,17 @@
+import asyncio
 import json
 import logging
-import asyncio
 import traceback
 from datetime import datetime
-from meta_app_chatbot.agent.utils import log_print
-from typing_extensions import Annotated
-from langchain_core.tools import BaseTool
-from typing import TypedDict, List, Any, Dict
+from typing import Annotated, Any, TypedDict
+
 from langchain_core.messages import ToolMessage
-from langgraph.graph.message import add_messages
-from langgraph.graph import StateGraph, START, END
 from langchain_core.runnables import RunnableLambda
+from langchain_core.tools import BaseTool
+from langgraph.graph import END, START, StateGraph
+from langgraph.graph.message import add_messages
+
+from meta_app_chatbot.agent.utils import log_print
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ class BasicToolNode:
     and serialization of results.
     """
 
-    def __init__(self, tools: List[BaseTool]) -> None:
+    def __init__(self, tools: list[BaseTool]) -> None:
         """
         Initialize the ToolNode with a list of tools.
 
@@ -44,7 +45,7 @@ class BasicToolNode:
                 )
             self.tools_by_name[tool.name] = tool
 
-    def __call__(self, inputs: Any) -> Dict[str, List[Any]]:
+    def __call__(self, inputs: Any) -> dict[str, list[Any]]:
         """
         Execute tools based on the last message's tool calls.
 
@@ -135,7 +136,7 @@ class BasicToolNode:
             return error_message
 
     def _create_error_message(
-        self, tool_call: Dict[str, Any], error: str
+        self, tool_call: dict[str, Any], error: str
     ) -> ToolMessage:
         """
         Create a ToolMessage for a failed tool execution.
@@ -175,7 +176,7 @@ class BasicToolNode:
             logger.warning(f"Failed to serialize result as JSON: {e}")
             return str(result)
 
-    def get_available_tools(self) -> List[str]:
+    def get_available_tools(self) -> list[str]:
         """
         Get list of available tool names.
 

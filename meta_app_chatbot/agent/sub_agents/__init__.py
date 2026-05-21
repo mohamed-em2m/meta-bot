@@ -1,11 +1,11 @@
+from .agent_tool_base import AgentAsTool, BasicToolNode
 from .sub_agents_registry import (
-    agent_pairs,
     AgentConfig,
-    AgentToolPair,
     AgentToolFactory,
+    AgentToolPair,
+    agent_pairs,
     setup_agents,
 )
-from .agent_tool_base import AgentAsTool, BasicToolNode
 
 __all__ = [
     "agent_pairs",

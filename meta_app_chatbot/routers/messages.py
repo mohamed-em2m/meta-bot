@@ -1,9 +1,12 @@
 import uuid
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from google.cloud import firestore
+
 from meta_app_chatbot.agent.utils import log_print
-from .schemas import StoreMessagesRequest, GetTopMessagesRequest
+
+from .schemas import GetTopMessagesRequest, StoreMessagesRequest
 
 router = APIRouter()
 db = firestore.Client()

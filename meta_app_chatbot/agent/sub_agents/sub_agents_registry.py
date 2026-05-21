@@ -1,13 +1,16 @@
 import asyncio
 import traceback
-from langchain.tools import tool
 from dataclasses import dataclass
-from meta_app_chatbot.agent.utils import log_print
+from typing import Any
+
+from langchain.tools import tool
+
 from meta_app_chatbot.agent.tools import crm_reader
-from .agent_tool_base import AgentAsTool
-from typing import List, Dict, Any, Optional
-from .tool_prompts import odoo_query_templete
+from meta_app_chatbot.agent.utils import log_print
 from meta_app_chatbot.config.settings import settings
+
+from .agent_tool_base import AgentAsTool
+from .tool_prompts import odoo_query_templete
 
 
 @dataclass
@@ -16,10 +19,10 @@ class AgentConfig:
 
     name: str
     description: str
-    tools: List[Any]
+    tools: list[Any]
     system_prompt_template: type(odoo_query_templete)
     retry_attempts: int = 7
-    default_params: Dict[str, Any] = None
+    default_params: dict[str, Any] = None
     model: str = None
 
 
@@ -35,8 +38,8 @@ class AgentToolFactory:
     """Factory for creating standardized agent-based tools"""
 
     def __init__(self):
-        self.agent_configs: Dict[str, AgentConfig] = {}
-        self.agent_pairs: Dict[str, AgentToolPair] = {}
+        self.agent_configs: dict[str, AgentConfig] = {}
+        self.agent_pairs: dict[str, AgentToolPair] = {}
 
     def register_agent_type(self, agent_config: AgentConfig) -> None:
         """Register a new agent type with its configuration"""
@@ -110,12 +113,12 @@ class AgentToolFactory:
         self.agent_pairs[agent_type] = pair
         return pair
 
-    def get_agent(self, agent_type: str) -> Optional[AgentAsTool]:
+    def get_agent(self, agent_type: str) -> AgentAsTool | None:
         """Get the agent instance for a specific type"""
         pair = self.agent_pairs.get(agent_type)
         return pair.agent if pair else None
 
-    def get_tool(self, agent_type: str) -> Optional[callable]:
+    def get_tool(self, agent_type: str) -> callable | None:
         """Get the tool function for a specific type"""
         pair = self.agent_pairs.get(agent_type)
         return pair.tool if pair else None
@@ -134,7 +137,7 @@ AGENT_CONFIGS = {
 }
 
 
-def setup_agents() -> Dict[str, AgentToolPair]:
+def setup_agents() -> dict[str, AgentToolPair]:
     """
     Set up all agents and return dictionary of AgentToolPairs
 

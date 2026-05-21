@@ -1,10 +1,11 @@
 import asyncio
 import logging
-from typing import Dict
+
 from fastapi import FastAPI
+
 from meta_app_chatbot.agent.utils import setup_image_api
+from meta_app_chatbot.routers import media, messages, webhook
 from meta_app_chatbot.utils.logger import setup_logging
-from meta_app_chatbot.routers import webhook, messages, media
 
 # Setup logging and image API
 setup_logging()
@@ -30,7 +31,7 @@ app.include_router(media.router, tags=["Media"])
 
 
 @app.get("/", tags=["General"])
-async def root() -> Dict[str, str]:
+async def root() -> dict[str, str]:
     return {"message": "WhatsApp AI Agent is running."}
 
 

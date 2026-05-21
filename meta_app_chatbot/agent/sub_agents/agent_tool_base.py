@@ -1,21 +1,22 @@
-import os
-import pytz
+import asyncio
 import json
 import logging
-import asyncio
+import os
 import traceback
-import tiktoken
-from typing import Annotated
-from typing_extensions import TypedDict
 from datetime import datetime
-from meta_app_chatbot.agent.tools import odoo
-from meta_app_chatbot.agent.model_factory import ModelFactory
-from meta_app_chatbot.config.settings import settings
-from langchain_core.messages import ToolMessage
-from langgraph.graph.message import add_messages
-from langgraph.graph import StateGraph, START, END
-from langchain_core.runnables import RunnableLambda
+from typing import Annotated
 
+import pytz
+import tiktoken
+from langchain_core.messages import ToolMessage
+from langchain_core.runnables import RunnableLambda
+from langgraph.graph import END, START, StateGraph
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+from meta_app_chatbot.agent.model_factory import ModelFactory
+from meta_app_chatbot.agent.tools import odoo
+from meta_app_chatbot.config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -137,7 +138,7 @@ class AgentAsTool:
         Load OpenAI API keys from a JSON file.
         """
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 keys = json.load(f)
             os.environ["OPENAI_API_KEY"] = keys.get(key, "")
             settings.set("OPENAI_API_KEY", keys.get(key, ""))
@@ -320,7 +321,7 @@ class AgentAsTool:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(f"[{timestamp}] INFO: Agent tool completed successfully")
             print(
-                f"[{timestamp}] DEBUG: Final tool output:{self.get_token_length((f'{res}'))} token"
+                f"[{timestamp}] DEBUG: Final tool output:{self.get_token_length(f'{res}')} token"
             )
             return res
 

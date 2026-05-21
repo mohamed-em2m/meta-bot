@@ -1,5 +1,5 @@
 import sqlparse
-from sqlparse.sql import Where, Comparison, Parenthesis
+from sqlparse.sql import Comparison, Parenthesis, Where
 from sqlparse.tokens import Keyword, Newline, Punctuation
 
 

@@ -1,9 +1,10 @@
 import asyncio
+
 import firebase_admin
-from meta_app_chatbot.config.settings import settings
+from firebase_admin import credentials, firestore
+
 from meta_app_chatbot.agent.utils import log_print
-from firebase_admin import firestore
-from firebase_admin import credentials
+from meta_app_chatbot.config.settings import settings
 
 # Use a service account.
 cred = credentials.Certificate(settings.get("firebase_path"))

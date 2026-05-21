@@ -1,5 +1,7 @@
+from typing import Any
+
 from langchain.tools import tool
-from typing import Any, Dict, Optional
+
 from .facebook_messenger_controller import facebook
 
 
@@ -8,8 +10,8 @@ async def send_facebook_attachment(
     attachment_type: str = "image",
     url: str = "",
     file_path: str = "",
-    additions: Dict[str, Any] = {},
-) -> Dict[str, Any]:
+    additions: dict[str, Any] = {},
+) -> dict[str, Any]:
     """
     Send an attachment (image, video, audio, or file) via Facebook Messenger.
 
@@ -22,7 +24,7 @@ async def send_facebook_attachment(
     Returns:
         A dict with 'success': bool, 'response': raw API response, and 'error' if any.
     """
-    fb_sender_id: Optional[str] = additions.get("fb_sender_id")
+    fb_sender_id: str | None = additions.get("fb_sender_id")
 
     if not fb_sender_id:
         return {
@@ -68,8 +70,8 @@ async def send_facebook_image_with_text(
     image_url: str = "",
     image_path: str = "",
     text: str = "",
-    additions: Dict[str, Any] = {},
-) -> Dict[str, Any]:
+    additions: dict[str, Any] = {},
+) -> dict[str, Any]:
     """
     Send an image with optional text via Facebook Messenger.
 
@@ -82,7 +84,7 @@ async def send_facebook_image_with_text(
     Returns:
         A dict with 'success': bool, 'response': raw API response, and 'error' if any.
     """
-    fb_sender_id: Optional[str] = additions.get("fb_sender_id")
+    fb_sender_id: str | None = additions.get("fb_sender_id")
 
     if not fb_sender_id:
         return {
@@ -119,8 +121,8 @@ async def send_facebook_image_with_text(
 
 @tool
 async def send_facebook_message(
-    message: str = "", additions: Dict[str, Any] = {}
-) -> Dict[str, Any]:
+    message: str = "", additions: dict[str, Any] = {}
+) -> dict[str, Any]:
     """
     Send a text message via Facebook Messenger.
 
@@ -131,7 +133,7 @@ async def send_facebook_message(
     Returns:
         A dict with 'success': bool, 'response': raw API response, and 'error' if any.
     """
-    fb_sender_id: Optional[str] = additions.get("fb_sender_id")
+    fb_sender_id: str | None = additions.get("fb_sender_id")
 
     if not fb_sender_id:
         return {

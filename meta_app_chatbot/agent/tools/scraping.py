@@ -1,31 +1,31 @@
 import asyncio
-
 import logging
 import os
 import re
 import ssl
 import traceback
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Sequence, Union
-import pytz
+from collections.abc import Sequence
+from datetime import UTC, datetime
+from typing import Any
 
 import aiohttp
-import requests
-import tiktoken
 import httpx
 import openai
+import pytz
+import requests
+import tiktoken
 from bs4 import BeautifulSoup, Comment, NavigableString
 from googleapiclient.errors import HttpError
-from playwright.async_api import async_playwright
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 from langchain_core.tools import tool
 from langchain_core.vectorstores import InMemoryVectorStore
-from langchain_core.documents import Document
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from meta_app_chatbot.agent.tools.tool_prompts import system_template_summarize
-from meta_app_chatbot.agent.utils import log_print, get_token_length
-from meta_app_chatbot.cache.cache import cache_register
+from playwright.async_api import async_playwright
 
+from meta_app_chatbot.agent.tools.tool_prompts import system_template_summarize
+from meta_app_chatbot.agent.utils import get_token_length, log_print
+from meta_app_chatbot.cache.cache import cache_register
 
 # --- Logging Setup ---
 logging.basicConfig(
@@ -225,11 +225,11 @@ async def _scrape_task_static(
     url: str,
     session: aiohttp.ClientSession,
     remove_tags: Sequence[str] = ("script", "style"),
-    remove_comments: Optional[bool] = False,
-    remove_lines: Optional[bool] = True,
-    remove_spaces: Optional[bool] = True,
-    ssl_flag: Optional[bool] = True,
-    retries: Optional[int] = 2,
+    remove_comments: bool | None = False,
+    remove_lines: bool | None = True,
+    remove_spaces: bool | None = True,
+    ssl_flag: bool | None = True,
+    retries: int | None = 2,
     user_query: str = "",
     index: int = 0,
 ):
@@ -324,7 +324,7 @@ async def async_scrape_transform_links_dynamic(
 
 
 def scrape_links(
-    urls: Union[str, Sequence[str]],
+    urls: str | Sequence[str],
     remove_tags=(
         "script",
         "style",
@@ -424,7 +424,7 @@ def scrape_links(
     return contents
 
 
-def parse_iso_datetime(s: str) -> Optional[datetime]:
+def parse_iso_datetime(s: str) -> datetime | None:
     """
     Parse ISO-style date/time strings and return it only if it's not in the future.
 
@@ -437,7 +437,7 @@ def parse_iso_datetime(s: str) -> Optional[datetime]:
     if not s:
         return None
 
-    now = datetime.now(timezone.utc).astimezone()
+    now = datetime.now(UTC).astimezone()
     # now as a timezone-aware local datetime
 
     for fmt in (
@@ -478,8 +478,8 @@ def extract_events(data):
 
 
 def extract_events_from_search(
-    search_results: List[Dict[str, Any]],
-) -> List[Dict[str, Any]]:
+    search_results: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
     """
     Extract comprehensive event information from Google Custom Search Engine results.
 
@@ -625,7 +625,7 @@ def extract_events_from_search(
     return extracted_events
 
 
-def format_extracted_events(events: List[Dict[str, Any]]) -> str:
+def format_extracted_events(events: list[dict[str, Any]]) -> str:
     """
     Format extracted events into a string.
 
@@ -653,7 +653,7 @@ def format_extracted_events(events: List[Dict[str, Any]]) -> str:
     return "\n".join(result)
 
 
-def extract_events_all(items: List[Dict[str, Any]]) -> str:
+def extract_events_all(items: list[dict[str, Any]]) -> str:
     """
     Extract events from webpage data.
 
@@ -695,7 +695,7 @@ splitter = RecursiveCharacterTextSplitter(
 )
 
 
-def fly_search(query: str, res: List[str], top_k: int = 4) -> str:
+def fly_search(query: str, res: list[str], top_k: int = 4) -> str:
     """
     Implement RAG (Retrieval-Augmented Generation) to find the most similar content.
 
@@ -823,7 +823,7 @@ class AnalysisAgent:
             # Apply 5-second timeout
             return await asyncio.wait_for(get_completion(), timeout=5)
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             log_print("Warning", "Summarization timed out after 5 seconds.")
             return ""  # Return empty string on timeout
 

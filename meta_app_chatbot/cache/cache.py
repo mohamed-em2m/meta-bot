@@ -1,13 +1,13 @@
-from diskcache import Cache
-from typing import Any, Optional
-from meta_app_chatbot.agent.utils import generate_cache_key
 import json
+from typing import Any
+
+from diskcache import Cache
+
+from meta_app_chatbot.agent.utils import generate_cache_key
 
 
 class SimpleCache:
-    def __init__(
-        self, directory: str = "/tmp/mycache", size_limit: Optional[int] = None
-    ):
+    def __init__(self, directory: str = "/tmp/mycache", size_limit: int | None = None):
         """
         :param directory: Path on disk where cache files are stored
         :param size_limit: Maximum cache size in bytes. If None, no size limit.
@@ -20,13 +20,13 @@ class SimpleCache:
             directory, eviction_policy="least-recently-used", **cache_kwargs
         )
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """
         Retrieve a value by key. Returns None if key is missing.
         """
         return self._cache.get(key, default=None)
 
-    def get_auto(self, key) -> Optional[Any]:
+    def get_auto(self, key) -> Any | None:
         """
         Retrieve a value by key. Returns None if key is missing.
         """

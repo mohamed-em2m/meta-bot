@@ -1,10 +1,12 @@
-import os
-import httpx
-import base64
 import asyncio
-import aiofiles
+import base64
 import mimetypes
-from typing import Any, Dict, List, Optional
+import os
+from typing import Any
+
+import aiofiles
+import httpx
+
 from meta_app_chatbot.config.settings import settings
 
 
@@ -41,8 +43,8 @@ class MessengerClient:
         self.timeout = httpx.Timeout(connect=30.0, read=60.0, write=60.0, pool=30.0)
 
     async def _post(
-        self, payload: Dict[str, Any], retries: int = 3, backoff_factor: float = 2
-    ) -> Dict[str, Any]:
+        self, payload: dict[str, Any], retries: int = 3, backoff_factor: float = 2
+    ) -> dict[str, Any]:
         """Enhanced POST method with better error handling and logging."""
         params = {"access_token": self.page_access_token}
 
@@ -78,7 +80,7 @@ class MessengerClient:
 
     async def _upload_attachment(
         self, file_path: str, attachment_type: str, retries: int = 3
-    ) -> Optional[str]:
+    ) -> str | None:
         """Upload an attachment and return its attachment_id for reuse."""
         try:
             # Validate file
@@ -158,7 +160,7 @@ class MessengerClient:
 
     async def send_text_message(
         self, fb_sender_id: str, text: str, retries: int = 3
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Send a text message."""
         payload = {"recipient": {"id": fb_sender_id}, "message": {"text": text}}
 
@@ -196,11 +198,11 @@ class MessengerClient:
     async def send_image_with_text(
         self,
         fb_sender_id: str,
-        image_url: Optional[str] = None,
-        image_path: Optional[str] = None,
-        text: Optional[str] = None,
+        image_url: str | None = None,
+        image_path: str | None = None,
+        text: str | None = None,
         reuse_attachment: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Send an image with optional accompanying text.
 
@@ -270,11 +272,11 @@ class MessengerClient:
         self,
         fb_sender_id: str,
         attachment_type: str,
-        url: Optional[str] = None,
-        attachment_id: Optional[str] = None,
-        file_path: Optional[str] = None,
+        url: str | None = None,
+        attachment_id: str | None = None,
+        file_path: str | None = None,
         retries: int = 3,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Send an attachment (image, video, audio, or file).
 
@@ -351,9 +353,9 @@ class MessengerClient:
         self,
         fb_sender_id: str,
         text: str,
-        quick_replies: List[Dict[str, Any]],
+        quick_replies: list[dict[str, Any]],
         retries: int = 3,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Send a message with quick reply buttons."""
         payload = {
             "recipient": {"id": fb_sender_id},
@@ -392,8 +394,8 @@ class MessengerClient:
                 await asyncio.sleep(2 ** (attempt - 1))
 
     async def send_generic_template(
-        self, fb_sender_id: str, elements: List[Dict[str, Any]], retries: int = 3
-    ) -> Dict[str, Any]:
+        self, fb_sender_id: str, elements: list[dict[str, Any]], retries: int = 3
+    ) -> dict[str, Any]:
         """Send a generic template with cards."""
         payload = {
             "recipient": {"id": fb_sender_id},
@@ -440,9 +442,9 @@ class MessengerClient:
         self,
         fb_sender_id: str,
         text: str,
-        buttons: List[Dict[str, Any]],
+        buttons: list[dict[str, Any]],
         retries: int = 3,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Send a button template."""
         payload = {
             "recipient": {"id": fb_sender_id},

@@ -1,6 +1,7 @@
+import json
 import os
 import pathlib
-import json
+
 from dynaconf import Dynaconf
 
 # Configuration Directory

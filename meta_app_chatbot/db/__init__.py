@@ -1,4 +1,4 @@
-from .rag import BigQueryRAG
 from .firestore import FirestoreDB
+from .rag import BigQueryRAG
 
 __all__ = ["BigQueryRAG", "FirestoreDB"]

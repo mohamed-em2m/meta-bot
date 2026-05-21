@@ -1,22 +1,24 @@
-import uuid
-import time
-import json
-import logging
 import asyncio
 import datetime
-import tiktoken
+import json
+import logging
+import time
+import uuid
+from typing import Any
+
 import pandas as pd
+import tiktoken
 from google.cloud import bigquery
-from meta_app_chatbot.config.settings import settings
-from meta_app_chatbot.agent.utils import log_print
-from typing import List, Dict, Any, Optional, Union
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from vertexai.preview.language_models import TextEmbeddingModel, TextEmbeddingInput
 from google.cloud.bigquery import (
-    QueryJobConfig,
     ArrayQueryParameter,
+    QueryJobConfig,
     ScalarQueryParameter,
 )
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from vertexai.preview.language_models import TextEmbeddingInput, TextEmbeddingModel
+
+from meta_app_chatbot.agent.utils import log_print
+from meta_app_chatbot.config.settings import settings
 
 
 class BigQueryRAG:
@@ -66,10 +68,10 @@ class BigQueryRAG:
         self,
         dataset_id: str,
         table_id: str,
-        doc: Union[str, List[str]],
+        doc: str | list[str],
         source: str = "",
         storage: str = "",
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
     ):
         """Process documents, chunk them, and insert with embeddings."""
         if isinstance(doc, str):
@@ -122,7 +124,7 @@ class BigQueryRAG:
 
     def create_dataset(
         self, dataset_id: str, location: str = "us-central1"
-    ) -> Optional[bigquery.Dataset]:
+    ) -> bigquery.Dataset | None:
         """Create a new dataset."""
         dataset_ref = f"{self.project_id}.{dataset_id}"
         dataset = bigquery.Dataset(dataset_ref)
@@ -138,7 +140,7 @@ class BigQueryRAG:
 
     def create_documents_table(
         self, dataset_id: str, table_id: str = "documents"
-    ) -> Optional[bigquery.Table]:
+    ) -> bigquery.Table | None:
         """Create the main documents table with consistent schema."""
         schema = [
             bigquery.SchemaField("id", "STRING", mode="REQUIRED"),
@@ -158,8 +160,8 @@ class BigQueryRAG:
         return self._create_table(dataset_id, table_id, schema)
 
     def _create_table(
-        self, schema: Dict, dataset_id: str = None, table_id: str = None
-    ) -> Optional[bigquery.Table]:
+        self, schema: dict, dataset_id: str = None, table_id: str = None
+    ) -> bigquery.Table | None:
         """Create a new table with specified schema."""
         dataset_id = dataset_id or settings.get("RAG_DB")
         table_id = table_id or settings.get("RAG_TABLE")
@@ -176,10 +178,10 @@ class BigQueryRAG:
 
     async def get_embedding(
         self,
-        text: Union[str, List[str]],
+        text: str | list[str],
         task_type: str = "RETRIEVAL_DOCUMENT",
-        output_dimensionality: Optional[int] = 768,
-    ) -> List[List[float]]:
+        output_dimensionality: int | None = 768,
+    ) -> list[list[float]]:
         """Generate embeddings for text input."""
         # Ensure text is a list
         if isinstance(text, str):
@@ -202,7 +204,7 @@ class BigQueryRAG:
         return [embedding.values for embedding in embeddings]
 
     def insert_documents(
-        self, dataset_id: str, table_id: str, documents: List[Dict[str, Any]]
+        self, dataset_id: str, table_id: str, documents: list[dict[str, Any]]
     ) -> bool:
         """Insert documents with automatic embedding generation.
 
@@ -274,7 +276,7 @@ class BigQueryRAG:
         self,
         dataset_id: str,
         table_id: str,
-        query_embedding: List[float],
+        query_embedding: list[float],
         top_k: int = 10,
         distance_metric: str = "COSINE",
     ) -> pd.DataFrame:
@@ -348,10 +350,10 @@ class BigQueryRAG:
         dataset_id: str,
         table_id: str,
         query: str,
-        keyword_filter: Optional[str] = None,
-        metadata_filters: Optional[Dict[str, Any]] = None,
-        storage_filter: Optional[str] = None,
-        source_filter: Optional[str] = None,
+        keyword_filter: str | None = None,
+        metadata_filters: dict[str, Any] | None = None,
+        storage_filter: str | None = None,
+        source_filter: str | None = None,
         top_k: int = 10,
     ) -> pd.DataFrame:
         """Perform hybrid search combining vector similarity and metadata filtering."""
@@ -438,7 +440,7 @@ class BigQueryRAG:
 
         return self.client.query(sql, job_config=job_config).to_dataframe()
 
-    def get_table_info(self, dataset_id: str, table_id: str) -> Dict[str, Any]:
+    def get_table_info(self, dataset_id: str, table_id: str) -> dict[str, Any]:
         """Get information about a table."""
         table_ref = f"{self.project_id}.{dataset_id}.{table_id}"
         table = self.client.get_table(table_ref)
@@ -455,12 +457,12 @@ class BigQueryRAG:
             ],
         }
 
-    def list_datasets(self) -> List[str]:
+    def list_datasets(self) -> list[str]:
         """List all datasets in the project."""
         datasets = list(self.client.list_datasets())
         return [dataset.dataset_id for dataset in datasets]
 
-    def list_tables(self, dataset_id: str) -> List[str]:
+    def list_tables(self, dataset_id: str) -> list[str]:
         """List all tables in a dataset."""
         dataset_ref = f"{self.project_id}.{dataset_id}"
         tables = list(self.client.list_tables(dataset_ref))
@@ -497,7 +499,7 @@ class BigQueryRAG:
 
 
 class UnifiedBigQueryRAG(BigQueryRAG):
-    def __init__(self, *args, columns_dict: Dict[str, Dict[str, Any]] = None, **kwargs):
+    def __init__(self, *args, columns_dict: dict[str, dict[str, Any]] = None, **kwargs):
         super().__init__(*args, **kwargs)
         if columns_dict:
             self.schema_dict = columns_dict
@@ -505,7 +507,7 @@ class UnifiedBigQueryRAG(BigQueryRAG):
 
     def create_documents_table(
         self, dataset_id: str, table_id: str = "documents", schema: dict = {}
-    ) -> Optional[bigquery.Table]:
+    ) -> bigquery.Table | None:
         """Create the main documents table with consistent schema."""
         schema_dict = schema or self.schema
         if not schema_dict:
@@ -516,8 +518,8 @@ class UnifiedBigQueryRAG(BigQueryRAG):
 
     @staticmethod
     def create_schema(
-        columns_dict: Dict[str, Dict[str, Any]],
-    ) -> List[bigquery.SchemaField]:
+        columns_dict: dict[str, dict[str, Any]],
+    ) -> list[bigquery.SchemaField]:
         return [
             bigquery.SchemaField(
                 name, props["type"], **{k: v for k, v in props.items() if k != "type"}
@@ -529,8 +531,8 @@ class UnifiedBigQueryRAG(BigQueryRAG):
         self,
         dataset_id: str,
         table_id: str,
-        doc: Dict[str, Any] or List[Dict[str, Any]],
-        schema_dict: Dict[str, Dict[str, Any]] = None,
+        doc: dict[str, Any] or list[dict[str, Any]],
+        schema_dict: dict[str, dict[str, Any]] = None,
         split: bool = False,
         main_column: str = "text",
     ) -> bool:
@@ -561,8 +563,8 @@ class UnifiedBigQueryRAG(BigQueryRAG):
         )
 
     def check_row_to_schema(
-        self, row: Dict[str, Any], schema_dict: Dict[str, Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, row: dict[str, Any], schema_dict: dict[str, dict[str, Any]]
+    ) -> dict[str, Any]:
         row_dict = {}
         # validate required
         for fld, props in schema_dict.items():
@@ -597,8 +599,8 @@ class UnifiedBigQueryRAG(BigQueryRAG):
         self,
         dataset_id: str,
         table_id: str,
-        documents: List[Dict[str, Any]],
-        schema_dict: Dict[str, Dict[str, Any]],
+        documents: list[dict[str, Any]],
+        schema_dict: dict[str, dict[str, Any]],
         main_column: str = "text",
     ) -> bool:
         table_ref = f"{self.project_id}.{dataset_id}.{table_id}"
@@ -629,7 +631,7 @@ class UnifiedBigQueryRAG(BigQueryRAG):
         query: str,
         top_k: int = 10,
         distance_metric: str = "COSINE",
-        schema_dict: Dict[str, Dict[str, Any]] = None,
+        schema_dict: dict[str, dict[str, Any]] = None,
     ) -> pd.DataFrame:
         schema_dict = schema_dict or self.schema_dict
         if not schema_dict:
@@ -644,10 +646,10 @@ class UnifiedBigQueryRAG(BigQueryRAG):
         self,
         dataset_id: str,
         table_id: str,
-        query_embedding: List[float],
+        query_embedding: list[float],
         top_k: int,
         distance_metric: str,
-        schema_dict: Dict[str, Dict[str, Any]],
+        schema_dict: dict[str, dict[str, Any]],
     ) -> pd.DataFrame:
         valid_metrics = {
             "COSINE": ("ML.DISTANCE", "ASC"),
@@ -691,10 +693,10 @@ class UnifiedBigQueryRAG(BigQueryRAG):
         dataset_id: str,
         table_id: str,
         query: str,
-        keyword_filter: Optional[str] = None,
-        metadata_filters: Optional[Dict[str, Any]] = None,
-        storage_filter: Optional[str] = None,
-        source_filter: Optional[str] = None,
+        keyword_filter: str | None = None,
+        metadata_filters: dict[str, Any] | None = None,
+        storage_filter: str | None = None,
+        source_filter: str | None = None,
         top_k: int = 10,
     ) -> pd.DataFrame:
         """Perform hybrid search combining vector similarity and metadata filtering."""

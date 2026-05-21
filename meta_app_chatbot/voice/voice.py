@@ -1,18 +1,17 @@
 import os
-import io
-import wave
-import tempfile
 import subprocess
+import tempfile
+import wave
+
 from google import genai
-from typing import Optional
 from google.genai import types
+
 from meta_app_chatbot.config.settings import settings
 
 try:
-    import pygame
     import numpy as np
-    from google.cloud import speech
-    from google.cloud import texttospeech
+    import pygame
+    from google.cloud import speech, texttospeech
 except ImportError as e:
     print(f"Missing required library: {e}")
     print(
@@ -29,9 +28,7 @@ class GoogleSpeechService:
     - pip install google-cloud-texttospeech google-cloud-speech pygame sounddevice soundfile
     """
 
-    def __init__(
-        self, credentials_path: Optional[str] = None, play_audio: bool = False
-    ):
+    def __init__(self, credentials_path: str | None = None, play_audio: bool = False):
         """
         Initialize the Google Speech Service.
 
@@ -65,7 +62,7 @@ class GoogleSpeechService:
     def text_to_speech(
         self,
         text: str,
-        output_file: Optional[str] = None,
+        output_file: str | None = None,
         language_code: str = "en-US",
     ) -> bytes:
         """
@@ -113,11 +110,11 @@ class GoogleSpeechService:
 
     async def speech_to_text(
         self,
-        audio_file: Optional[str] = None,
-        audio_content: Optional[bytes] = None,
-        uri: Optional[str] = None,
+        audio_file: str | None = None,
+        audio_content: bytes | None = None,
+        uri: str | None = None,
         language_code: str = "en-US",
-        alternative_language_codes: Optional[list] = None,
+        alternative_language_codes: list | None = None,
         enable_automatic_punctuation: bool = True,
         model: str = "default",
         sample_rate: int = 16000,
@@ -140,7 +137,7 @@ class GoogleSpeechService:
         self.stt_client = speech.SpeechClient()
 
         if audio_file:
-            with io.open(audio_file, "rb") as f:
+            with open(audio_file, "rb") as f:
                 content = f.read()
         elif audio_content:
             content = audio_content
@@ -242,9 +239,7 @@ class GoogleSpeechService:
 
         return audio_bytes
 
-    def record_audio(
-        self, duration: int = 5, output_file: Optional[str] = None
-    ) -> bytes:
+    def record_audio(self, duration: int = 5, output_file: str | None = None) -> bytes:
         """
         Record audio from microphone using sounddevice.
 
@@ -338,7 +333,7 @@ class GoogleSpeechService:
         except Exception as e:
             print(f"Error playing audio: {e}")
 
-    def get_available_voices(self, language_code: Optional[str] = None) -> list:
+    def get_available_voices(self, language_code: str | None = None) -> list:
         """
         Get list of available voices.
 

@@ -1,6 +1,7 @@
 import pathlib
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
 from dynaprompt import DynaPrompt
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 # Path to the prompts directory
 PROMPTS_DIR = pathlib.Path(__file__).parent.parent.parent / "prompts"

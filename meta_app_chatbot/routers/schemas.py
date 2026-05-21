@@ -1,5 +1,6 @@
+from typing import Any
+
 from pydantic import BaseModel
-from typing import List, Optional, Any
 
 
 class MessageItem(BaseModel):
@@ -7,14 +8,14 @@ class MessageItem(BaseModel):
     sender: str
     text: str
     message_type: str
-    message_id: Optional[str] = None
-    time: Optional[Any] = None
+    message_id: str | None = None
+    time: Any | None = None
 
 
 class StoreMessagesRequest(BaseModel):
-    messages: List[MessageItem]
+    messages: list[MessageItem]
 
 
 class GetTopMessagesRequest(BaseModel):
     wa_num: str
-    top: Optional[int] = 10
+    top: int | None = 10
