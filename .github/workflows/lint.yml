@@ -1,4 +1,4 @@
-name: "✅ Pre-commit Checks"
+name: "🧹 Lint & Format"
 
 on:
   push:
@@ -11,10 +11,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pre-commit:
-    name: Run Pre-commit Hooks
+  ruff:
+    name: Ruff (Lint + Format)
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -29,13 +28,8 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Cache pre-commit environments
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
-          restore-keys: |
-            pre-commit-${{ runner.os }}-
+      - name: Run Ruff linter
+        run: uv run ruff check . --output-format=github
 
-      - name: Run pre-commit on all files
-        run: uv run pre-commit run --all-files --show-diff-on-failure
+      - name: Run Ruff formatter
+        run: uv run ruff format --check .
