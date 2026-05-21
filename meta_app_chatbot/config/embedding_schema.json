@@ -1,0 +1,10 @@
+{
+    "id":        {"type": "STRING",  "mode": "REQUIRED"},
+    "chunk_id":  {"type": "STRING"},
+    "source":    {"type": "STRING"},
+    "text":      {"type": "STRING",  "mode": "REQUIRED"},
+    "metadata":  {"type": "JSON"},
+    "storage":   {"type": "STRING"},
+    "embedding": {"type": "FLOAT64", "mode": "REPEATED"},
+    "created_at":{"type": "TIMESTAMP", "default_value_expression": "CURRENT_TIMESTAMP()"}
+}
