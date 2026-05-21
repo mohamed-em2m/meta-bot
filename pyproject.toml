@@ -1,8 +1,8 @@
 [project]
 authors = [{ name = "Mohaemd Emam", email = "emam200232@gmail.com" }]
-name = "meta-app-chatbot"
+name = "meta-bot"
 version = "0.1.0"
-description = "Add your description here"
+description = "Meta App Chatbot"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -77,13 +77,31 @@ dev = [
     "mkdocs-minify-plugin>=0.8.0",
 ]
 
+
 [tool.ruff]
 line-length = 88
-target-version = "py312"
+fix = true
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "B", "C4", "UP"]
-ignore = []
+select = ["ASYNC", "E", "F", "FAST", "I", "PLE"]
+ignore = [
+    "ASYNC109",
+    "E101",
+    "E402",
+    "E501",
+    "F841",
+    "E731",
+    "W291",
+] # TODO: determine if adding timeouts to all the unbounded async functions is needed / worth-it so we can un-ignore ASYNC109
+unfixable = ["E101", "E402", "E501", "F841", "E731"]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "tab"
+line-ending = "lf"
+docstring-code-format = true
+docstring-code-line-length = 140
+skip-magic-trailing-comma = false
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

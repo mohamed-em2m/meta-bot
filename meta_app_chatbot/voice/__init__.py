@@ -1,3 +1,3 @@
 from .voice import GoogleSpeechService
 
-__all__ = ["GoogleSpeechService"]
+__all__ = ['GoogleSpeechService']

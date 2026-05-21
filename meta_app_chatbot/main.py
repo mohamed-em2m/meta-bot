@@ -13,29 +13,29 @@ setup_image_api()
 
 # Attempt to use uvloop for performance
 try:
-    import uvloop
+	import uvloop
 
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+	asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 except ImportError:
-    pass
+	pass
 
-app = FastAPI(title="Meta App Chatbot")
+app = FastAPI(title='Meta App Chatbot')
 
 # Basic configuration
 logging.basicConfig(level=logging.INFO)
 
 # Include routers
-app.include_router(webhook.router, tags=["Webhook"])
-app.include_router(messages.router, tags=["Messages"])
-app.include_router(media.router, tags=["Media"])
+app.include_router(webhook.router, tags=['Webhook'])
+app.include_router(messages.router, tags=['Messages'])
+app.include_router(media.router, tags=['Media'])
 
 
-@app.get("/", tags=["General"])
+@app.get('/', tags=['General'])
 async def root() -> dict[str, str]:
-    return {"message": "WhatsApp AI Agent is running."}
+	return {'message': 'WhatsApp AI Agent is running.'}
 
 
-if __name__ == "__main__":
-    import uvicorn
+if __name__ == '__main__':
+	import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+	uvicorn.run(app, host='0.0.0.0', port=8000)
