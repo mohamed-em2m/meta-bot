@@ -21,7 +21,7 @@ Welcome to the official documentation for the **Meta App Chatbot**. This guide p
 
 The **Meta App Chatbot** is not just a chatbot—it's an agentic framework. It combines:
 
-1. **Reasoning**: Cutting-edge models like GPT-5 and Gemini 2.5.
+1. **Reasoning**: Cutting-edge models like GPT-4o and Gemini 2.0.
 2. **Memory**: Persistent conversation state in Firestore.
 3. **Knowledge**: Scalable domain knowledge via BigQuery RAG.
 4. **Action**: Real-world integration via modular tools (Odoo CRM, Meta Messaging).

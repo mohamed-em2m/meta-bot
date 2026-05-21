@@ -1,25 +1,30 @@
-# 🚀 Meta App Chatbot - Advanced WhatsApp AI Agent
+# 🚀 Meta App Chatbot - Advanced WhatsApp & Facebook AI Agent
+
+<p align="center">
+  <img src="assests/meta_chatbot.png" alt="Meta App Chatbot Banner" width="600">
+</p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-An asynchronous, high-concurrency WhatsApp,Facebook,Instagram AI agent framework designed for production. Built with **Multi-LLM support (GPT-5, Gemini 2.5)**, **RAG (BigQuery)**, and **modular tool-agents**.
+An asynchronous, high-concurrency WhatsApp, Facebook, and Instagram AI agent framework designed for production. Built with **Multi-LLM support (GPT-4o, Gemini 2.0)**, **Vector RAG (BigQuery)**, and **Modular Router-based Architecture**.
 
-[**View Detailed Documentation 📖**](docs/index.md)
+[**Explore the Documentation 📖**](docs/index.md)
 
 ---
 
 ## ✨ Key Features
 
-* **Advanced Reasoning**: Leverages cutting-edge models like `gpt-5-mini` and `gemini-2.5-flash`.
-* **BigQuery RAG**: Real-time Retrieval-Augmented Generation for specialized domain knowledge.
-* **Modular Architecture**: Features a clean router-based design for webhooks, messaging, and media.
-* **Modular Tool System**: Easily extendable agents with custom tools using `@tool` decorators.
-* **Fully Asynchronous**: Built with FastAPI and `httpx` for high-performance I/O.
-* **Multi-Platform Support**: Unified message processing for both WhatsApp Cloud API and Facebook Page.
-* **🔥 Dynaconf Powered**: Robust configuration management with `.toml` support and environment overrides.
-* **🧪 Persistent Caching**: Efficient session and state management.
+*   **🧠 Intelligent Reasoning**: Leverages state-of-the-art models via LangGraph for complex decision making.
+*   **📊 Enterprise RAG**: Real-time Retrieval-Augmented Generation using Google BigQuery Vector Search.
+*   **🧩 Modular Architecture**: Clean FastAPI router-based design for separation of concerns.
+*   **🛠️ Tool-Agent System**: Easily extendable with custom tools using standard `@tool` decorators.
+*   **⚡ High Performance**: Fully asynchronous I/O with `httpx` and `aiohttp`.
+*   **📱 Unified Messaging**: Process WhatsApp Cloud API and Facebook Page messages through a single gateway.
+*   **⚙️ Modern Config**: Powered by **Dynaconf** for robust, multi-environment `.toml` configuration.
+*   **🎙️ Voice AI**: Built-in support for audio processing and speech-to-text integration.
 
 ---
 
@@ -28,132 +33,103 @@ An asynchronous, high-concurrency WhatsApp,Facebook,Instagram AI agent framework
 ```text
 .
 ├── meta_app_chatbot/
-│   ├── agent/                 # Core AI Logic (Main Agent & Tools)
-│   ├── db/                    # Database & RAG Factory
-│   │   ├── firestore/         # Firestore DB controllers
-│   │   └── rag/               # BigQuery RAG implementations
+│   ├── agent/                 # Core AI Logic, Sub-Agents & Tools
+│   ├── db/                    # Database & RAG Factory (Firestore, BigQuery)
 │   ├── config/                # Centralized configuration (Settings & Schemas)
-│   ├── routers/               # FastAPI Routers (Webhook, Messages, Media)
+│   ├── routers/               # FastAPI Routers (Webhooks, Media, API)
 │   ├── prompts/               # Structured LLM instructions (.md templates)
-│   ├── voice/                 # Audio processing and Voice-to-Text
-│   └── main.py                # App entrypoint & Router registration
-├── Dockerfile                 # Production-ready containerization
-└── pyproject.toml             # Dependency management
+│   ├── voice/                 # Audio processing and STS/STT services
+│   └── main.py                # App entrypoint & middleware configuration
+├── docs/                      # Detailed system documentation
+├── assests/                   # Project assets and branding
+├── Dockerfile                 # Production container setup
+└── pyproject.toml             # Project metadata and dependencies
 ```
 
 ---
 
-## ⚙️ Getting Started
+## ⚙️ Quick Start
 
 ### 1. Installation
 
-Requires [Python 3.12](https://www.python.org/downloads/) or higher.
+Requires [Python 3.12+](https://www.python.org/downloads/).
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/meta-app-chatbot.git
-cd meta-app-chatbot
+git clone https://github.com/mohamed-em2m/meta-bot.git
+cd meta-bot
 
 # Set up virtual environment
 python -m venv .venv
-source .venv/bin/activate  # Or `.venv\Scripts\activate` on Windows
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
+playwright install chromium # Required for dynamic scraping tools
 ```
 
 ### 2. Configuration
 
-Professional configuration is managed via **Dynaconf**.
+Configuration is managed via **Dynaconf**.
 
-1. Navigate to `meta_app_chatbot/config/`.
-2. Duplicate `settings.toml.example` and name it `settings.toml`.
-3. Fill in your API keys and Meta App credentials:
+1.  Navigate to `meta_app_chatbot/config/`.
+2.  Duplicate `settings.toml.example` as `settings.toml`.
+3.  Add your credentials:
 
 ```toml
-# meta_app_chatbot/config/settings.toml
-
 [default]
 OPENAI_API_KEY = "sk-..."
 GEMINI_API_KEY = "AIza..."
 WHATSAPP_ACCESS_TOKEN = "EAA..."
+# Add other platform-specific keys as needed
 ```
-
-> [!TIP]
-> You can also use environment variables by prefixing them with `DYNACONF_` (e.g., `DYNACONF_OPENAI_API_KEY`).
 
 ---
 
-## 🚀 Usage
+## 🚀 Development & Quality
 
-### Running Locally
+This project maintains high code quality standards through strict linting:
 
-To start the FastAPI server:
+*   **Linting**: [Ruff](https://github.com/astral-sh/ruff) for lightning-fast Python linting and formatting.
+*   **Hooks**: [Pre-commit](https://pre-commit.com/) ensures all commits meet quality gates.
 
+To run lints manually:
 ```bash
-python meta_app_chatbot/main.py
+ruff check .
+pre-commit run --all-files
 ```
-
-### 📡 API Endpoints
-
-* `GET /webhook`: Meta Webhook verification.
-* `POST /webhook`: Inbound message handler (WhatsApp/Facebook).
-* `POST /store_messages`: Bulk store conversation history in Firestore.
-* `POST /get_top_messages`: Retrieve recent conversation context.
-* `GET /get_audio`: Retrieve temporary audio files.
-* `GET /get_image`: Retrieve temporary image files.
 
 ---
 
-## 🧠 Architecture Highlights
+## 🏗️ Architecture Highlights
 
-### Router-Based Design
+### Distributed Webhook Handling
+Specialized routers decouple incoming platform payloads from the agent's internal state, allowing for easy addition of new platforms.
 
-The application is split into specialized routers for better maintainability:
-* **Webhook Router**: Decouples platform-specific payload extraction from core agent logic.
-* **Messages Router**: Handles all stateful persistence with Firestore.
-* **Media Router**: Provides a secure way to serve temporary assets.
+### Atomic Tool Design
+Tools are defined as isolated Python functions, making the agent's capabilities easy to test and safe to update without touching core logic.
 
-### Multi-Agent Reasoning
-
-The system uses a primary agent that can delegate tasks to specialized sub-agents or use tools to interact with external services like Odoo, BigQuery, or the WhatsApp API itself.
-
-### Optimized RAG
-
-The RAG pipeline utilizes BigQuery for scalable document storage and vector-based retrieval, ensuring the AI agent always has access to the most recent and relevant data.
-
----
-
-## 🐳 Deployment
-
-The project is containerized for easy deployment to **Google Cloud Run**, **AWS Fargate**, or any standard Kubernetes cluster.
-
-```bash
-# Build the image
-docker build -t meta-chatbot .
-
-# Run the container
-docker run -p 8080:8080 --env-file .env meta-chatbot
-```
+### Scalable Persistence
+Conversation history is managed via Google Firestore, ensuring horizontal scalability and low-latency state retrieval.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions of all sizes!
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git checkout origin feature/AmazingFeature`)
-5. Open a Pull Request
+1.  Fork the repository.
+2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3.  Ensure lints pass (`ruff check .`).
+4.  Commit your changes.
+5.  Push to the branch and open a Pull Request.
 
 ---
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ---
 
-<p align="center">Made with ❤️ for the Open Source Community</p>
+**Made with ❤️ for the AI & Open Source Community**
